@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 const path = require("path");
+const { resizeImage } = require("../services/imageService");
 const validateImageFile = require("../utils/validateImageFile");
 
 const IMAGE_UPLOAD_PATH = "../../files/resize-image/uploaded-images/";
@@ -28,8 +29,10 @@ const upload = multer({
   },
 });
 
-router.post("/", upload.single("image"), (req, res) => {
-  res.send({ fileReceived: true });
+router.post("/", upload.single("image"), async (req, res) => {
+  const resizedImageFileName = await resizeImage(req.file.path, req.body);
+  const filePath = `../../files/resize-image/processed-images/${resizedImageFileName}`;
+  res.download(path.join(__dirname, filePath));
 });
 
 module.exports = router;

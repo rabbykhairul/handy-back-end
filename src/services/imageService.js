@@ -6,18 +6,18 @@ const PROCESSED_IMAGE_SAVE_PATH = path.join(
   "../../files/resize-image/processed-images/"
 );
 
-const resizeImage = (imagePath, preferences) => {
+const resizeImage = async (imagePath, preferences) => {
   const { width = 300, height = 300, format = "jpeg" } = preferences;
   const newImageName = `${Date.now()}-${Math.round(
     Math.random() * 1e9
   )}.${format}`;
 
-  sharp(imagePath)
+  await sharp(imagePath)
     .resize(Number(width), Number(height), { fit: "fill", position: "center" })
     .toFormat(format)
     .toFile(path.join(PROCESSED_IMAGE_SAVE_PATH, newImageName));
 
-  return path.join(PROCESSED_IMAGE_SAVE_PATH, newImageName);
+  return newImageName;
 };
 
 module.exports = { resizeImage };
