@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 const path = require("path");
+const validateImageFile = require("../utils/validateImageFile");
 
 const IMAGE_UPLOAD_PATH = "../../files/resize-image/uploaded-images/";
 
@@ -17,10 +18,18 @@ const uploadImageStorage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage: uploadImageStorage });
+const upload = multer({
+  storage: uploadImageStorage,
+
+  fileFilter: function (req, file, cb) {
+    const result = validateImageFile(file);
+    if (result) return cb(null, true);
+    else return cb(null, false);
+  },
+});
 
 router.post("/", upload.single("image"), (req, res) => {
-  res.send({ uploadedImage: req.file.originalname });
+  res.send({ fileReceived: true });
 });
 
 module.exports = router;
